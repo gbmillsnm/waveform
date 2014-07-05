@@ -10,6 +10,8 @@
 #include "TDirectory.h"
 #include "TH1.h"
 
+#include "Waveform.h"
+
 
 class TDirectory;
 

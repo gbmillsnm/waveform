@@ -12,7 +12,6 @@
 //    char           fType[20];          //waveform type
 //    char          *fWaveformName;         //run+waveform number in character format
 //    Int_t          fNtrace;            //Number of traces
-//    Int_t          fNTimeStamps;       //Number of time stamps per trace
 //    UInt_t         fFlag;
 //    Double32_t     fTemperature;       
 //    WaveformHeader    fEvtHdr;
@@ -73,7 +72,6 @@ Waveform::Waveform() : fIsValid(kFALSE)
 
    if (!fgTraces) fgTraces = new TClonesArray("Trace", 1000);
    fTraces = fgTraces;
-   fHighPt = new TRefArray;
    fNtrace = 0;
    fWaveformName = 0;
 }
@@ -82,11 +80,6 @@ Waveform::Waveform() : fIsValid(kFALSE)
 Waveform::~Waveform()
 {
    Clear();
-   if (fH == fgHist) fgHist = 0;
-   delete fH; fH = 0;
-   delete fHighPt; fHighPt = 0;
-   delete fMuons;  fMuons = 0;
-   delete [] fClosestDistance;
    if (fWaveformName) delete [] fWaveformName;
 }
 
@@ -107,18 +100,18 @@ void Waveform::Build(Int_t ev, Int_t ntrace, Int_t nTimeStamps) {
   snprintf(fWaveformName,nch,"Waveform%d_Run%d",ev,200);
   snprintf(etype,20,"type%d",ev%5);
   SetType(etype);
-  SetHeader(ev, 200, 960312, random);
-  SetNvertex(Int_t(1+20*gRandom->Rndm()));
+  SetHeader(ev, 200, 960312);
   SetTemperature(random+20.);
 
   //  Create and Fill the Trace objects
+  Int_t base = 10;
   UShort_t buffer[nTimeStamps];
   for (Int_t t = 0; t < ntrace; t++) {
-    for (int i=0;i<nTimeStamps) {
-      gRandom->Rannor(sigmat,sigmas)
-      buffer[i] = 
+    for (int i=0;i<nTimeStamps;i++) {
+      gRandom->Rannor(sigmat,sigmas);
+      buffer[i] = base + 10*sigmat;
     }
-    AddTrace(random,ptmin);
+    AddTrace(1,nTimeStamps,buffer);
   }
   //Restore Object count 
   //To save space in the table keeping trace of all referenced objects
@@ -128,7 +121,7 @@ void Waveform::Build(Int_t ev, Int_t ntrace, Int_t nTimeStamps) {
 }  
 
 //______________________________________________________________________________
-Trace *Waveform::AddTrace(Int_t chan, Int_t nTS, UShort_t * values)
+void Waveform::AddTrace(Int_t chan, Int_t nTS, UShort_t * values)
 {
    // Add a new trace to the list of traces for this waveform.
    // To avoid calling the very time consuming operator new for each trace,
@@ -144,15 +137,12 @@ Trace *Waveform::AddTrace(Int_t chan, Int_t nTS, UShort_t * values)
 #endif
    //Save reference to last Trace in the collection of Traces
    fLastTrace = trace;
-   return trace;
 }
 
 //______________________________________________________________________________
 void Waveform::Clear(Option_t * /*option*/)
 {
    fTraces->Clear("C"); //will also call Trace::Clear
-   fHighPt->Delete();
-   fMuons->Delete();
    fTriggerBits.Clear();
 }
 

@@ -20,8 +20,17 @@ endif
 
 WAVEFORMO        = Waveform.$(ObjSuf) WaveformDict.$(ObjSuf)
 WAVEFORMS        = Waveform.$(SrcSuf) WaveformDict.$(SrcSuf)
+WAVEFORMO        += Trace.$(ObjSuf) TraceDict.$(ObjSuf)
+WAVEFORMS        += Trace.$(SrcSuf) Trace.$(SrcSuf)
+WAVEFORMO        += WaveformHeader.$(ObjSuf) WaveformHeaderDict.$(ObjSuf)
+WAVEFORMS        += WaveformHeader.$(SrcSuf) WaveformHeaderDict.$(SrcSuf)
+WAVEFORMO        += HistogramManager.$(ObjSuf) HistogramManagerDict.$(ObjSuf)
+WAVEFORMS        += HistogramManager.$(SrcSuf) HistogramManagerDict.$(SrcSuf)
 WAVEFORMSO       = libWaveform.$(DllSuf)
 WAVEFORM         = Waveform$(ExeSuf)
+TRACE            = Trace$(ExeSuf)
+
+
 ifeq ($(PLATFORM),win32)
 WAVEFORMLIB      = libWaveform.lib
 else
@@ -32,9 +41,12 @@ endif
 MAINWAVEFORMO    = MainWaveform.$(ObjSuf)
 MAINWAVEFORMS    = MainWaveform.$(SrcSuf)
 
+MAINTRACEO    = MainTrace.$(ObjSuf)
+MAINTRACES    = MainTrace.$(SrcSuf)
+
 OBJS          = $(WAVEFORMO) $(MAINWAVEFORMO)
 
-PROGRAMS      = $(WAVEFORM) 
+PROGRAMS      = $(WAVEFORM) $(TRACE)
 
 ifeq ($(ARCH),aix5)
 MAKESHARED    = /usr/vacpp/bin/makeC++SharedLib
@@ -90,6 +102,11 @@ $(WAVEFORM):    $(WAVEFORMSO)  $(MAINWAVEFORMO)
 		$(MT_EXE)
 		@echo "$@ done"
 
+$(TRACE)   :    $(WAVEFORMSO)  $(MAINTRACEO)
+		$(LD) $(LDFLAGS) $(MAINTRACEO) $(WAVEFORMO) $(LIBS) $(OutPutOpt)$@
+		$(MT_EXE)
+		@echo "$@ done"
+
 
 clean:
 		@rm -f $(OBJS) core *Dict.*
@@ -107,5 +124,14 @@ Waveform.$(ObjSuf): Waveform.h
 MainWaveform.$(ObjSuf): Waveform.h
 
 WaveformDict.$(SrcSuf): Waveform.h WaveformLinkDef.h
+	@echo "Generating dictionary $@..."
+	$(ROOTCINT) -f $@ -c $^
+WaveformHeaderDict.$(SrcSuf): WaveformHeader.h WaveformHeaderLinkDef.h
+	@echo "Generating dictionary $@..."
+	$(ROOTCINT) -f $@ -c $^
+TraceDict.$(SrcSuf): Trace.h TraceLinkDef.h
+	@echo "Generating dictionary $@..."
+	$(ROOTCINT) -f $@ -c $^
+HistogramManagerDict.$(SrcSuf): HistogramManager.h HistogramManagerLinkDef.h
 	@echo "Generating dictionary $@..."
 	$(ROOTCINT) -f $@ -c $^

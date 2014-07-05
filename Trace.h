@@ -8,17 +8,14 @@
 // Description of the trace parameters                        //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
+#include "Rtypes.h"
+#include "Riostream.h"
 
-#include "TObject.h"
-
-
-class TDirectory;
-
-class Trace : public TObject {
+class Trace {
 
 private:
   Int_t        fNTimeStamps;   //Number of points for this trace
-  UShort_t  *  fADCValues;    //[fNTimeStamps]
+  UShort_t  *  fADCValues;    //[fNTimeStamps] (rootcint array size)
   Int_t        fChannel; //Channel
   Int_t        fASIC;    //ASIC
   Int_t        fMotherboard;//Motherboard
@@ -28,12 +25,14 @@ private:
 
 public:
 
-  Trace() { fNTimeStamps = 0; fChannel =0; fASIC=0; 
-    fCrate =0; fMotherboard=0;fGlobal = 0; }
+  Trace() { }
   Trace(const Trace& orig);
   Trace(Int_t chan, Int_t nTS, UShort_t * values);
-  virtual ~Trace() {Clear();}
+  virtual ~Trace() { }
   Trace &operator=(const Trace &orig);
+
+  void Set(Int_t chan, Int_t nTS, UShort_t * values);
+  void Clear(const Option_t * opt = "");
 
   Float_t       GetIntegral();
   Int_t         GetNTimeStamps() const { return fNTimeStamps; }
@@ -43,7 +42,7 @@ public:
   Int_t         GetCrate() const { return fCrate; }
   Int_t         GetGlobal() const { return fGlobal; }
 
-  ClassDef(Trace,2)  //A trace
+  ClassDef(Trace,1)  //A trace
 };
 
 #endif

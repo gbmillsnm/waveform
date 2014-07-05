@@ -16,53 +16,44 @@
 #include "TH1.h"
 #include "TBits.h"
 #include "TMath.h"
+#include "WaveformHeader.h"
+#include "Trace.h"
+#include <vector>
 
-
-
-class Waveform : public TObject {
+class Waveform {
 
 private:
-   char           fType[20];          //waveform type
-   char          *fWaveformName;         //run+waveform number in character format
-   Int_t          fNtrace;            //Number of traces
-   Double32_t     fTemperature;       
-   WaveformHeader fEvtHdr;
-   TClonesArray  *fTraces;            //->array with all traces
-   TRef           fLastTrace;         //reference pointer to last trace
-   TBits          fTriggerBits;       //Bits triggered by this waveform.
-   Bool_t         fIsValid;           //
-
-   static TClonesArray *fgTraces;
-   static TH1F         *fgHist;
+  char                fType[20];          //waveform type
+  char*               fWaveformName;         //run+waveform number in character format
+  Int_t               fNtrace;            //Number of traces
+  Double32_t          fTemperature;       
+  WaveformHeader      fEvtHdr;
+  std::vector<Trace>  fTraces;            //->array with all traces
+  TBits               fTriggerBits;       //Bits triggered by this waveform.
+  Bool_t              fIsValid;           //
 
 public:
-   Waveform();
-   virtual ~Waveform();
-   void          Clear(Option_t *option ="");
-   Bool_t        IsValid() const { return fIsValid; }
-   static void   Reset(Option_t *option ="");
-   void          ResetHistogramPointer() {fH=0;}
-   void          SetNtrace(Int_t n) { fNtrace = n; }
-   void          SetFlag(UInt_t f) { fFlag = f; }
-   void          SetTemperature(Double32_t t) { fTemperature = t; }
-   void          SetType(char *type) {strcpy(fType,type);}
-   void          SetHeader(Int_t i, Int_t run, Int_t date, Float_t random);
-   Trace        *AddTrace(Float_t random, Float_t ptmin=1);
+  Waveform();
+  virtual ~Waveform();
+  void          Clear(Option_t *option ="");
+  Bool_t        IsValid() const { return fIsValid; }
+  static void   Reset(Option_t *option ="");
+  void          SetNtrace(Int_t n) { fNtrace = n; }
+  void          SetTemperature(Double32_t t) { fTemperature = t; }
+  void          SetType(char *type) {strcpy(fType,type);}
+  void          SetHeader(Int_t i, Int_t run, Int_t date);
+  void          AddTrace(Int_t chan, Int_t nTS, UShort_t * buffer);
+  void          Build(Int_t ev, Int_t ntrace, Int_t nTimeStamps);
 
-   void          SetRandomVertex();
 
-   char         *GetType() {return fType;}
-   Int_t         GetNtrace() const { return fNtrace; }
-   Int_t         GetNTimeStamps() const { return fNTimeStamps; }
-   UInt_t        GetFlag() const { return fFlag; }
-   Double32_t    GetTemperature() const { return fTemperature; }
-   WaveformHeader  *GetHeader() { return &fEvtHdr; }
-   TClonesArray *GetTraces() const {return fTraces;}
-   TRefArray    *GetPulsePeaks() const {return fPulsePeaks;}
-   Trace        *GetLastTrace() const {return (Trace*)fLastTrace.GetObject();}
-   TH1F         *GetHistogram() const {return fH;}
+  char         *GetType() {return fType;}
+  Int_t         GetNtrace() const { return fNtrace; }
+  Double32_t    GetTemperature() const { return fTemperature; }
+  WaveformHeader  *GetHeader() { return &fEvtHdr; }
+  TClonesArray *GetTraces() const {return fTraces;}
+  Trace        *GetLastTrace() const {return (Trace*)fLastTrace.GetObject();}
 
-   ClassDef(Waveform,1)  //Waveform structure
-};
+  ClassDef(Waveform,1)  //Waveform structure
+    };
 
 #endif

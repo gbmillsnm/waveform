@@ -13,7 +13,6 @@ HistogramManager::HistogramManager(TDirectory *dir)
    dir->cd();
 
    fNtrace      = new TH1F("hNtrace",    "Ntrace",100,575,625);
-   fNTimeStamps = new TH1F("hNseg",      "Nseg",1000,5000,10000);
    fTemperature = new TH1F("hTemperature","Temperature",100,19.5,20.5);
 
    // cd back to original directory
@@ -35,7 +34,6 @@ void HistogramManager::Hfill(Waveform *waveform)
    // Fill histograms.
 
    fNtrace->Fill(waveform->GetNtrace());
-   fNTimeStamps->Fill(waveform->GetNTimeStamps());
    fTemperature->Fill(waveform->GetTemperature());
 
    for (Int_t itrace = 0; itrace < waveform->GetNtrace(); itrace++) {
