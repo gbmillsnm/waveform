@@ -9,6 +9,7 @@ Trace::Trace(const Trace &orig)
    // Copy a trace object
 
    fNTimeStamps = orig.fNTimeStamps;
+   fADCValues = new UShort_t[fNTimeStamps];
    for (int i=0;i<fNTimeStamps;i++) {
      fADCValues[i] = orig.fADCValues[i];
    }
@@ -23,14 +24,19 @@ Trace::Trace(const Trace &orig)
 Trace::Trace(Int_t chan, Int_t nTS, UShort_t * buffer)
 {
   // Create a trace object.
-  // Note that in this example, data members 
-  //do not have any physical meaning.
   fChannel = chan;
   fNTimeStamps = nTS;
   fADCValues = new UShort_t[fNTimeStamps];
   for (int i=0; i<fNTimeStamps;i++) {
     fADCValues[i] = buffer[i];
   }
+  fChannel = chan;
+  fASIC = chan % 8;
+  fMotherboard = fASIC % 8;
+  fCrate = fMotherboard % 20;
+  fGlobal = chan;
+  cout << "Created Trace" << endl;
+
 }
 
 //______________________________________________________________________________
@@ -38,15 +44,18 @@ Trace &Trace::operator=(const Trace &orig)
 {
    // Copy a trace
 
-   fNTimeStamps = orig.fNTimeStamps;
-   for (int i=0;i<fNTimeStamps;i++) {
-     fADCValues[i] = orig.fADCValues[i];
-   }
-   fChannel = orig.fChannel;
-   fASIC = orig.fASIC;
-   fMotherboard = orig.fMotherboard;
-   fCrate = orig.fCrate;
-   fGlobal = orig.fGlobal;
+  fNTimeStamps = orig.fNTimeStamps;
+  fADCValues = new UShort_t[fNTimeStamps];
+  fNTimeStamps = orig.fNTimeStamps;
+  
+  for (int i=0;i<fNTimeStamps;i++) {
+    fADCValues[i] = orig.fADCValues[i];
+  }
+  fChannel = orig.fChannel;
+  fASIC = orig.fASIC;
+  fMotherboard = orig.fMotherboard;
+  fCrate = orig.fCrate;
+  fGlobal = orig.fGlobal;
    
    return *this;
 }
@@ -61,17 +70,21 @@ void Trace::Clear(const Option_t * opt )
 }
 
 //______________________________________________________________________________
-void Trace::Set(Int_t chan, Int_t nTS, UShort_t * trace) 
+void Trace::Set(Int_t chan, Int_t nTS, UShort_t * buffer) 
 {
   // Create a trace object.
-  // Note that in this example, data members 
-  //do not have any physical meaning.
-
   fChannel = chan;
   fNTimeStamps = nTS;
+  fADCValues = new UShort_t[fNTimeStamps];
   for (int i=0; i<fNTimeStamps;i++) {
-    fADCValues[i] = trace[i];
+    fADCValues[i] = buffer[i];
   }
+  fChannel = chan;
+  fASIC = chan % 8;
+  fMotherboard = fASIC % 8;
+  fCrate = fMotherboard % 20;
+  fGlobal = chan;
+
   fIntegral = GetIntegral();
 }
 

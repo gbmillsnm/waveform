@@ -25,10 +25,10 @@ private:
 
 public:
 
-  Trace() { }
+  Trace() { fADCValues = 0; fNTimeStamps = 0; }
   Trace(const Trace& orig);
   Trace(Int_t chan, Int_t nTS, UShort_t * values);
-  virtual ~Trace() { }
+  virtual ~Trace() { if (fADCValues) delete[] fADCValues; }
   Trace &operator=(const Trace &orig);
 
   void Set(Int_t chan, Int_t nTS, UShort_t * values);

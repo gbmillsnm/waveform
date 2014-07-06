@@ -1,3 +1,4 @@
+#include <vector>
 #ifdef __CINT__
 
 #pragma link off all globals;
@@ -5,5 +6,6 @@
 #pragma link off all functions;
 
 #pragma link C++ class Waveform+;
+#pragma link C++ class vector<Trace>+;
 
 #endif
