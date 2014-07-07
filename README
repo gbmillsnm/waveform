@@ -1,0 +1,12 @@
+// To run trace1.C
+.L Trace.cxx++
+.L trace1.C++
+trace1()
+
+// To run waveform1.C
+.L Trace.cxx++
+.L WaveformHeader.cxx++
+.L HistogramManager.cxx++
+.L Waveform.cxx++
+.L waveform1.C++
+waveform1()
