@@ -16,8 +16,13 @@ endif
 include $(ROOTSYS)/etc/Makefile.arch
 endif
 
+GLIBS := $(shell $(RC) --glibs)
+
 #------------------------------------------------------------------------------
 
+# here we lump all of the classes and their dictionaries together 
+# into one shared object file libWaveform.so 
+# (Trace, Waveform, HistogramManager)
 WAVEFORMO        = Waveform.$(ObjSuf) WaveformDict.$(ObjSuf)
 WAVEFORMS        = Waveform.$(SrcSuf) WaveformDict.$(SrcSuf)
 WAVEFORMO        += Trace.$(ObjSuf) TraceDict.$(ObjSuf)
@@ -27,7 +32,15 @@ WAVEFORMS        += WaveformHeader.$(SrcSuf) WaveformHeaderDict.$(SrcSuf)
 WAVEFORMO        += HistogramManager.$(ObjSuf) HistogramManagerDict.$(ObjSuf)
 WAVEFORMS        += HistogramManager.$(SrcSuf) HistogramManagerDict.$(SrcSuf)
 WAVEFORMSO       = libWaveform.$(DllSuf)
+
+CPTVIEWERO        = CptViewer.$(ObjSuf) CptViewerDict.$(ObjSuf)
+CPTVIEWERS        = CptViewer.$(SrcSuf) CptViewerDict.$(SrcSuf)
+
+
+# target executables
+CPTVIEWER        = CptViewer$(ExeSuf)
 WAVEFORM         = Waveform$(ExeSuf)
+WAVEFORMDRAW     = WaveformDraw$(ExeSuf)
 TRACE            = Trace$(ExeSuf)
 
 
@@ -37,28 +50,32 @@ else
 WAVEFORMLIB      = $(shell pwd)/$(WAVEFORMSO)
 endif
 
-
+# main() source and object files
 MAINWAVEFORMO    = MainWaveform.$(ObjSuf)
 MAINWAVEFORMS    = MainWaveform.$(SrcSuf)
+
+MAINWAVEFORMDRAWO    = MainWaveformDraw.$(ObjSuf)
+MAINWAVEFORMDRAWS    = MainWaveformDraw.$(SrcSuf)
 
 MAINTRACEO    = MainTrace.$(ObjSuf)
 MAINTRACES    = MainTrace.$(SrcSuf)
 
-OBJS          = $(WAVEFORMO) $(MAINWAVEFORMO)
+MAINCPTVIEWERO    = MainCptViewer.$(ObjSuf)
+MAINCPTVIEWERS    = MainCptViewer.$(SrcSuf)
 
-PROGRAMS      = $(WAVEFORM) $(TRACE)
+# object files and executable targets
+OBJS          = $(WAVEFORMO) $(MAINWAVEFORMO) $(MAINWAVEFORMDRAWO) $(CPTVIEWERO) $(MAINCPTVIEWERO)
+
+PROGRAMS      = $(WAVEFORMDRAW) $(WAVEFORM) $(TRACE) $(CPTVIEWER)
 
 ifeq ($(ARCH),aix5)
 MAKESHARED    = /usr/vacpp/bin/makeC++SharedLib
 endif
 
-WaveformDict.o : WaveformDict.$(SrcSuf)
-	$(CXX) $(CXXFLAGS) -c $<
-
 #------------------------------------------------------------------------------
 
 .SUFFIXES: .$(SrcSuf) .$(ObjSuf) .$(DllSuf)
-.PHONY:    Aclock Hello Tetris
+.PHONY:
 
 .$(SrcSuf).$(ObjSuf):
 	$(CXX)  $(CXXFLAGS) -c $<
@@ -102,6 +119,16 @@ $(WAVEFORM):    $(WAVEFORMSO)  $(MAINWAVEFORMO)
 		$(MT_EXE)
 		@echo "$@ done"
 
+$(CPTVIEWER):    $(CPTVIEWERO)  $(MAINCPTVIEWERO)
+		$(LD) $(LDFLAGS) $(MAINCPTVIEWERO) $(CPTVIEWERO) $(GLIBS) $(OutPutOpt)$@
+		$(MT_EXE)
+		@echo "$@ done"
+
+$(WAVEFORMDRAW): $(WAVEFORMSO)  $(MAINWAVEFORMDRAWO)
+		$(LD) $(LDFLAGS) $(MAINWAVEFORMDRAWO) $(WAVEFORMO) $(LIBS) $(OutPutOpt)$@
+		$(MT_EXE)
+		@echo "$@ done"
+
 $(TRACE)   :    $(WAVEFORMSO)  $(MAINTRACEO)
 		$(LD) $(LDFLAGS) $(MAINTRACEO) $(WAVEFORMO) $(LIBS) $(OutPutOpt)$@
 		$(MT_EXE)
@@ -118,11 +145,21 @@ distclean:      clean
 
 
 ###
- 
-Waveform.$(ObjSuf): Waveform.h
+# The following define dependencies for 
+# 1. the object file header dependencies
+# 2. the root LinkDef files that generate class dictionaries for root
 
-MainWaveform.$(ObjSuf): Waveform.h
+Waveform.$(ObjSuf): Waveform.h Trace.h
 
+MainWaveform.$(ObjSuf): Waveform.h Trace.h HistogramManager.h 
+
+MainWaveformDraw.$(ObjSuf): Waveform.h Trace.h HistogramManager.h 
+
+MainCptViewer.$(ObjSuf): CptViewer.h  
+
+CptViewerDict.$(SrcSuf): CptViewer.h CptViewerLinkDef.h
+	@echo "Generating dictionary $@..."
+	$(ROOTCINT) -f $@ -c $^
 WaveformDict.$(SrcSuf): Waveform.h WaveformLinkDef.h
 	@echo "Generating dictionary $@..."
 	$(ROOTCINT) -f $@ -c $^
