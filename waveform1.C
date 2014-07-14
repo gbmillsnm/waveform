@@ -47,7 +47,7 @@ void waveform1w()
   char etype[20];
   Int_t run = 1;
   // Fill the tree
-  for (Int_t ev = 0; ev <100; ev++) {
+  for (Int_t ev = 0; ev <1000; ev++) {
     waveform->Clear();
     Float_t sigmat, sigmas;
     gRandom->Rannor(sigmat,sigmas);
@@ -63,9 +63,14 @@ void waveform1w()
     Int_t base = 10;
     UShort_t buffer[nTimeStamps];
     for (Int_t t = 0; t < ntrace; t++) {
+      UShort_t ib;
       for (int i=0;i<nTimeStamps;i++) {
 	gRandom->Rannor(sigmat,sigmas);
-	buffer[i] = base + 10*sigmat;
+	ib = base + 10*sigmat;
+	if (ib >= 0 && ib < 4096)
+	  buffer[i] = ib;
+	else
+	  buffer[i] = 0;
       }
       tr.Set(t,nTimeStamps,buffer);
       waveform->AddTrace(tr);
