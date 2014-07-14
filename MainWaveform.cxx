@@ -30,9 +30,9 @@ int main(int argc, char **argv)
   Int_t nwaveform = 400;     // by default create 400 waveforms
   Int_t comp   = 1;       // by default file is compressed
   Int_t split  = 1;       // by default, split Waveform in sub branches
-  Int_t write  = 0;       // by default the tree is filled
+  Int_t write  = 1;       // by default the tree is filled
   Int_t hfill  = 0;       // by default histograms are not filled
-  Int_t read   = 1;
+  Int_t read   = 0;
   Int_t arg4   = 1;
   Int_t arg5   = 600;     //default number of tracks per waveform
   Int_t netf   = 0;
@@ -147,7 +147,6 @@ int main(int argc, char **argv)
     TBranch *branch = tree->Branch("waveform", &waveform, bufsize,split);
     branch->SetAutoDelete(kFALSE);
     if(split >= 0 && branchStyle) tree->BranchRef();
-    Float_t ptmin = 1;
 
     for (ev = 0; ev < nwaveform; ev++) {
       if (ev%printev == 0) {
