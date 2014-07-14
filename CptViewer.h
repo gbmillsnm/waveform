@@ -121,8 +121,8 @@ public:
   void CloseWindow();
   void DoButton();
   void HandleMenu(Int_t id);
-  void HandlePopup() { printf("menu popped up\n"); }
-  void HandlePopdown() { printf("menu popped down\n"); }
+  void HandlePopup() { if (fVerbocity > 0) printf("menu popped up\n"); }
+  void HandlePopdown() { if (fVerbocity > 0) printf("menu popped down\n"); }
   
   void Created() { Emit("Created()"); }
 

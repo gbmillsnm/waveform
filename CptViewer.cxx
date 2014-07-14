@@ -36,7 +36,7 @@
 CptViewer::CptViewer(const TGWindow *win, const char * filename) : TGMainFrame(win,1000,600)
 {
 
-  fVerbocity = 1;
+  fVerbocity = 0;
 
   SetCleanup(kDeepCleanup);
 
@@ -233,7 +233,7 @@ void CptViewer::HandleMenu(Int_t id)
 
   case M_FILE_SAVE:
     {
-      printf("M_FILE_SAVE\n");
+      if (fVerbocity > 0) printf("M_FILE_SAVE\n");
     }
     break;
 
@@ -242,15 +242,15 @@ void CptViewer::HandleMenu(Int_t id)
       if (fHistOpened) {
 	fCanvas->SaveAs("wave.jpg");
       }
-      printf("M_FILE_PRINT\n"); 
-      printf("Hiding itself, select \"Print Setup...\" to enable again\n");
+      if (fVerbocity > 0) printf("M_FILE_PRINT\n"); 
+      if (fVerbocity > 0) printf("Hiding itself, select \"Print Setup...\" to enable again\n");
       fMenuFile->HideEntry(M_FILE_PRINT);
       break;
     }
 
   case M_FILE_PRINTSETUP:
-    printf("M_FILE_PRINTSETUP\n");
-    printf("Enabling \"Print\"\n");
+    if (fVerbocity > 0) printf("M_FILE_PRINTSETUP\n");
+    if (fVerbocity > 0) printf("Enabling \"Print\"\n");
     //          fMenuFile->EnableEntry(M_FILE_PRINT);
     break;
 
@@ -363,7 +363,7 @@ void CptViewer::HandleMenu(Int_t id)
     break;
 
   default:
-    printf("Default Menu item %d selected\n", id);
+    if (fVerbocity > 0) printf("Default Menu item %d selected\n", id);
     break;
   }
 }
