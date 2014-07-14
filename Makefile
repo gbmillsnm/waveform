@@ -40,7 +40,6 @@ CPTVIEWERS        = CptViewer.$(SrcSuf) CptViewerDict.$(SrcSuf)
 # target executables
 CPTVIEWER        = CptViewer$(ExeSuf)
 WAVEFORM         = Waveform$(ExeSuf)
-WAVEFORMDRAW     = WaveformDraw$(ExeSuf)
 TRACE            = Trace$(ExeSuf)
 
 
@@ -54,9 +53,6 @@ endif
 MAINWAVEFORMO    = MainWaveform.$(ObjSuf)
 MAINWAVEFORMS    = MainWaveform.$(SrcSuf)
 
-MAINWAVEFORMDRAWO    = MainWaveformDraw.$(ObjSuf)
-MAINWAVEFORMDRAWS    = MainWaveformDraw.$(SrcSuf)
-
 MAINTRACEO    = MainTrace.$(ObjSuf)
 MAINTRACES    = MainTrace.$(SrcSuf)
 
@@ -64,9 +60,9 @@ MAINCPTVIEWERO    = MainCptViewer.$(ObjSuf)
 MAINCPTVIEWERS    = MainCptViewer.$(SrcSuf)
 
 # object files and executable targets
-OBJS          = $(WAVEFORMO) $(MAINWAVEFORMO) $(MAINWAVEFORMDRAWO) $(CPTVIEWERO) $(MAINCPTVIEWERO)
+OBJS          = $(WAVEFORMO) $(MAINWAVEFORMO)  $(CPTVIEWERO) $(MAINCPTVIEWERO)
 
-PROGRAMS      = $(WAVEFORMDRAW) $(WAVEFORM) $(TRACE) $(CPTVIEWER)
+PROGRAMS      =  $(WAVEFORM) $(TRACE) $(CPTVIEWER)
 
 ifeq ($(ARCH),aix5)
 MAKESHARED    = /usr/vacpp/bin/makeC++SharedLib
@@ -121,11 +117,6 @@ $(WAVEFORM):    $(WAVEFORMSO)  $(MAINWAVEFORMO)
 
 $(CPTVIEWER):    $(CPTVIEWERO)  $(MAINCPTVIEWERO)
 		$(LD) $(LDFLAGS) $(MAINCPTVIEWERO) $(CPTVIEWERO) $(GLIBS) $(OutPutOpt)$@
-		$(MT_EXE)
-		@echo "$@ done"
-
-$(WAVEFORMDRAW): $(WAVEFORMSO)  $(MAINWAVEFORMDRAWO)
-		$(LD) $(LDFLAGS) $(MAINWAVEFORMDRAWO) $(WAVEFORMO) $(LIBS) $(OutPutOpt)$@
 		$(MT_EXE)
 		@echo "$@ done"
 

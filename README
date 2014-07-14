@@ -10,3 +10,14 @@ trace1()
 .L Waveform.cxx++
 .L waveform1.C++
 waveform1()
+
+to make executables
+
+make all 
+
+or 
+
+make Trace
+make Waveform
+make CptViewer
+
