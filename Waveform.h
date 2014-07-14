@@ -9,16 +9,16 @@
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
+#include <vector>
+
 #include "TObject.h"
-#include "TClonesArray.h"
-#include "TRefArray.h"
-#include "TRef.h"
+#include "TCanvas.h"
 #include "TH1.h"
 #include "TBits.h"
 #include "TMath.h"
+
 #include "WaveformHeader.h"
 #include "Trace.h"
-#include <vector>
  
 class Waveform {
 
@@ -32,11 +32,12 @@ private:
   TBits               fTriggerBits;       //Bits triggered by this waveform.
   Bool_t              fIsValid;           //
   int                 fEventSize;
+  TCanvas *           fCanvas;
 
 public:
   Waveform();
   virtual ~Waveform();
-  void          Clear() { fTraces.clear(); }
+  void          Clear() { fNtrace=0;fTraces.clear(); }
   void          SetSize();
   Bool_t        IsValid() const { return fIsValid; }
   void          Reset();
@@ -46,12 +47,13 @@ public:
 
   void          AddTrace(const Trace & tr) {fTraces.push_back(tr);fNtrace++;}
   void          Build(Int_t run, Int_t ev, Int_t ntrace, Int_t nTimeStamps);
+  void          DrawChannel(Int_t chan);
 
   char         *GetType() {return fType;}
-  Int_t         GetNtrace() const { return fNtrace; }
-  Double32_t    GetTemperature() const { return fTemperature; }
+  Int_t         GetNtrace() { return fNtrace; }
+  Double32_t    GetTemperature() { return fTemperature; }
   WaveformHeader  *GetHeader() { return &fEvtHdr; }
-  const std::vector<Trace> *GetTraces() const {return & fTraces;}
+  std::vector<Trace> *GetTraces() {return & fTraces;}
 
   ClassDef(Waveform,1)  //Waveform structure
 

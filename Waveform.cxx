@@ -63,13 +63,19 @@ void Waveform::Build(Int_t run,Int_t ev, Int_t ntrace, Int_t nTimeStamps) {
   SetTemperature(random+20.);
 
   //  Create and Fill the Trace objects
+  fNtrace = 0;
   Int_t base = 10;
   UShort_t buffer[nTimeStamps];
   Trace tr;
   for (Int_t t = 0; t < ntrace; t++) {
+    UShort_t ib;
     for (int i=0;i<nTimeStamps;i++) {
       gRandom->Rannor(sigmat,sigmas);
-      buffer[i] = base + 10*sigmat;
+      ib = base + 10*sigmat;
+      if (ib >= 0 && ib < 4096)
+	buffer[i] = ib;
+      else
+	buffer[i] = 0;
     }
     tr.Set(t,nTimeStamps,buffer);
     AddTrace(tr);
@@ -91,3 +97,13 @@ void Waveform::SetSize() {
     fEventSize += len*sizeof(fTraces[i]);
   }
 }
+
+//______________________________________________________________________________
+void Waveform::DrawChannel(Int_t chan) {
+  fCanvas = new TCanvas("Waveform 1");
+  if (chan < fNtrace) {
+    cout << "Channel " << chan << " " << 
+    fTraces[chan].GetChannel() << endl;
+  }
+}
+
