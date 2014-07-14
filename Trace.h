@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "Rtypes.h"
 #include "Riostream.h"
+#include "TMath.h"
 
 class Trace {
 
@@ -22,6 +23,8 @@ private:
   Int_t        fCrate;//Crate
   Int_t        fGlobal;//
   Float_t      fIntegral;
+  Float_t      fMean;
+  Float_t      fRMS;
 
 public:
 
@@ -32,16 +35,18 @@ public:
   Trace &operator=(const Trace &orig);
 
   void Set(Int_t chan, Int_t nTS, UShort_t * values);
-  void Clear(const Option_t * opt = "");
+  void Clear();
 
   Float_t       GetIntegral();
-  Int_t         GetNTimeStamps() const { return fNTimeStamps; }
-  Int_t         GetChannel() const { return fChannel; }
-  Int_t         GetASIC() const { return fASIC; }
-  Int_t         GetMotherboard() const { return fMotherboard;}
-  Int_t         GetCrate() const { return fCrate; }
-  Int_t         GetGlobal() const { return fGlobal; }
-
+  Float_t       GetMean() { return fMean;}
+  Float_t       GetRMS() { return fRMS;}
+  Int_t         GetNTimeStamps() { return fNTimeStamps; }
+  Int_t         GetChannel() { return fChannel; }
+  Int_t         GetASIC() { return fASIC; }
+  Int_t         GetMotherboard() { return fMotherboard;}
+  Int_t         GetCrate() { return fCrate; }
+  Int_t         GetGlobal() { return fGlobal; }
+  const UShort_t* GetADCValues() { return fADCValues; }
   ClassDef(Trace,1)  //A trace
 };
 
